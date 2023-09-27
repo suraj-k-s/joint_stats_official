@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1084897640181",
+    "project_id": "joint-stats-official",
+    "storage_bucket": "joint-stats-official.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1084897640181:android:5977ae9fd7fadf3397cfbc",
+        "android_client_info": {
+          "package_name": "com.example.joint_stats_official"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrkSfxdLbNY97gIwnKKTiHXab8d3UBtcQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

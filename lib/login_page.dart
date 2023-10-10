@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:joint_stats_official/dashboard.dart';
 import 'package:joint_stats_official/register_page.dart';
-import 'package:joint_stats_official/sjc.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -31,7 +31,7 @@ class _LoginState extends State<Login> {
         if (userCredential.user != null) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => SJC()),
+            MaterialPageRoute(builder: (context) => DashboardPage()),
           );
         }
       } catch (e) {

@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:joint_stats_official/user_profile.dart';
 
 class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String? userProfilePhotoUrl = FirebaseAuth.instance.currentUser?.photoURL;
-    print(userProfilePhotoUrl);
 
     return Scaffold(
       appBar: AppBar(
@@ -20,8 +20,11 @@ class DashboardPage extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: CircleAvatar(
-                // You can use the user's profile picture here
-                backgroundImage: AssetImage('assets/profile_image.png'),
+                backgroundImage: userProfilePhotoUrl != null
+                    ? NetworkImage(
+                        userProfilePhotoUrl) // Use the user's profile photo URL
+                    : AssetImage('assets/anonymous.jpg')
+                        as ImageProvider, // Placeholder image
               ),
             ),
           ),
@@ -37,15 +40,18 @@ class DashboardPage extends StatelessWidget {
     final RenderBox overlay =
         Overlay.of(context)!.context.findRenderObject() as RenderBox;
 
+    final Offset iconPosition = overlay.localToGlobal(
+      Offset(0, kToolbarHeight), // Adjust Y offset to place it below the icon
+      ancestor: overlay,
+    );
+
     showMenu(
       context: context,
-      position: RelativeRect.fromRect(
-        Rect.fromPoints(
-          overlay.localToGlobal(Offset.zero, ancestor: overlay),
-          overlay.localToGlobal(overlay.size.bottomRight(Offset.zero),
-              ancestor: overlay),
-        ),
-        Offset.zero & overlay.size,
+      position: RelativeRect.fromLTRB(
+        iconPosition.dx + 140, // Adjust the left position as needed
+        iconPosition.dy + 25.0, // Adjust the top position as needed
+        iconPosition.dx + 0, // Adjust the right position as needed
+        iconPosition.dy + 48.0, // Adjust the bottom position as needed
       ),
       items: [
         PopupMenuItem(
@@ -56,6 +62,8 @@ class DashboardPage extends StatelessWidget {
               // Navigate to the profile page
               Navigator.pop(context); // Close the menu
               // Add your navigation logic here
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ProfilePage()));
             },
           ),
         ),

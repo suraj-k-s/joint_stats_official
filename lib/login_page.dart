@@ -25,8 +25,6 @@ class _LoginState extends State<Login> {
             await auth.signInWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
-          // email: "surajks28101999@gmail.com",
-          // password: "Qwerty123",
         );
 
         // If login is successful, navigate to the SJC page

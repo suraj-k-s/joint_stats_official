@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -80,7 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
           await uploadTask.whenComplete(() async {
             final imageUrl = await storageRef.getDownloadURL();
             setState(() {
-              profileImageUrl = imageUrl;
+              profileImageUrl = imageUrl; // Update profileImageUrl with new URL
             });
             userDoc.update({
               'profileImageUrl': imageUrl,
@@ -89,7 +88,7 @@ class _ProfilePageState extends State<ProfilePage> {
         }
 
         // Show a success message or navigate to another page.
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Profile updated successfully'),
         ));
       }).catchError((error) {

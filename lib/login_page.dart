@@ -23,10 +23,10 @@ class _LoginState extends State<Login> {
         final FirebaseAuth auth = FirebaseAuth.instance;
         final UserCredential userCredential =
             await auth.signInWithEmailAndPassword(
-          // email: _emailController.text.trim(),
-          // password: _passwordController.text.trim(),
-          email: "surajks28101999@gmail.com",
-          password: "Qwerty123",
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+          // email: "surajks28101999@gmail.com",
+          // password: "Qwerty123",
         );
 
         // If login is successful, navigate to the SJC page

@@ -70,6 +70,7 @@ class _RegistrationState extends State<Registration> {
           await firestore.collection('users').doc(userId).set({
             'name': _nameController.text,
             'email': _emailController.text,
+            'password': _passwordController.text,
             'profileImageUrl': _imageUrl,
           });
 

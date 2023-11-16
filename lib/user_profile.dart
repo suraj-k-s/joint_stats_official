@@ -162,7 +162,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: Text('Edit Name'),
+                        title: const Text('Edit Name'),
                         content: TextField(
                           controller: nameController,
                           decoration: InputDecoration(hintText: 'New Name'),
@@ -172,7 +172,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
-                            child: Text('Cancel'),
+                            child: const Text('Cancel'),
                           ),
                           TextButton(
                             onPressed: () {

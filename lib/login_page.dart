@@ -43,7 +43,6 @@ class _LoginState extends State<Login> {
           backgroundColor: Colors.red,
           textColor: Colors.white,
         );
-        print('Login failed: $e');
       }
     }
   }
@@ -98,7 +97,6 @@ class _LoginState extends State<Login> {
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter your email';
                                 }
-                                // Add more email validation logic if needed
                                 return null;
                               },
                             ),

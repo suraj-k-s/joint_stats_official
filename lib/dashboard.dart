@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:joint_stats_official/sjc.dart';
 import 'package:joint_stats_official/user_profile.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -30,8 +31,64 @@ class DashboardPage extends StatelessWidget {
           ),
         ],
       ),
-      body: Center(
-        child: Text('Welcome to the Dashboard!'),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Section 1: Button with plus icon
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: ElevatedButton.icon(
+              onPressed: () {
+                // Navigate to the SJC page when the button is pressed
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SJC()),
+                );
+              },
+              icon: Icon(Icons.add),
+              label: Text('Click to Upload Data'),
+            ),
+          ),
+          Divider(),
+          // Section 2: Scrollable list of data
+          Expanded(
+            child: ListView.builder(
+              itemCount: 10, // Replace with your data count
+              itemBuilder: (context, index) {
+                // Sample data for demonstration
+                final DateTime currentDate = DateTime.now();
+                final String formattedDate =
+                    '${currentDate.day}/${currentDate.month}/${currentDate.year}';
+                final String formattedTime =
+                    '${currentDate.hour}:${currentDate.minute}';
+                final String emoji = '😊';
+                final String details = 'Details for item $index';
+
+                return ListTile(
+                  leading: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        formattedDate,
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      Text(
+                        formattedTime,
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ],
+                  ),
+                  title: Text('$emoji Item $index'),
+                  subtitle: Text(details),
+                  // Add onTap logic if needed
+                  onTap: () {
+                    // Your onTap logic here
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -49,7 +49,7 @@ class _PassState extends State<Pass> {
             const Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
-                "question",
+                " Considering all the different ways your diseases is affecting you, if you were to stay in this state for the next few months do you consider your present state satisfactory?",
                 style: TextStyle(fontSize: 18.0),
                 textAlign: TextAlign.center,
               ),
@@ -153,7 +153,7 @@ class _PassState extends State<Pass> {
             const Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
-                "question",
+                "Do you feel the same as your pre diagnosis state of health?",
                 style: TextStyle(fontSize: 18.0),
                 textAlign: TextAlign.center,
               ),

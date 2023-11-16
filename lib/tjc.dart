@@ -77,7 +77,7 @@ class _TJCState extends State<TJC> {
               SizedBox(
                   height: 360,
                   width: 460,
-                  child: Image.asset('assets/SJC.jpg', fit: BoxFit.fill)),
+                  child: Image.asset('assets/sjc.jpg', fit: BoxFit.fill)),
               for (var point in points)
                 ClickablePoint(
                   point: point,

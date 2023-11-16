@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:joint_stats_official/login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:joint_stats_official/sjc.dart';
 import 'package:lottie/lottie.dart';
 import 'dart:async';
 
@@ -20,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
       Timer(const Duration(seconds: 6), () {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const Login()),
+          MaterialPageRoute(builder: (context) => const SJC()),
         );
       });
     } else {
@@ -29,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
       Timer(const Duration(seconds: 6), () {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const Login()),
+          MaterialPageRoute(builder: (context) => const SJC()),
         );
       });
     }

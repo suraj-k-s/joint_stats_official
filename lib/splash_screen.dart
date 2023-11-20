@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:joint_stats_official/login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:joint_stats_official/sjc.dart';
+import 'package:joint_stats_official/login_page.dart';
 import 'package:lottie/lottie.dart';
 import 'dart:async';
 
@@ -21,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
       Timer(const Duration(seconds: 6), () {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const SJC()),
+          MaterialPageRoute(builder: (context) => const Login()),
         );
       });
     } else {
@@ -30,7 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
       Timer(const Duration(seconds: 6), () {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const SJC()),
+          MaterialPageRoute(builder: (context) => const Login()),
         );
       });
     }
@@ -53,7 +52,7 @@ class _SplashScreenState extends State<SplashScreen> {
 }
 
 
-// child: ColorFiltered(
+//        child: ColorFiltered(
 //           colorFilter: const ColorFilter.mode(
 //             Colors.blue, // Set the color of the animation here
 //             BlendMode.modulate,

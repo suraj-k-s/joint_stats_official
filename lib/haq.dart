@@ -17,6 +17,9 @@ class _HAQState extends State<HAQ> {
   void initState() {
     super.initState();
     questions = getQuestions();
+    setState(() {
+      
+    });
   }
 
   List<Question> getQuestions() {

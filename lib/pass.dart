@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class Pass extends StatefulWidget {
   const Pass({Key? key}) : super(key: key);
@@ -26,6 +27,13 @@ class _PassState extends State<Pass> {
                 //   context,
                 //   MaterialPageRoute(builder: (context) => Pass()),
                 // );
+                Fluttertoast.showToast(
+                  msg: 'Please Check your Network and try again',
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.white,
+                );
               }),
         ],
       ),

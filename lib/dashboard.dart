@@ -1,5 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:joint_stats_official/emoji.dart';
+import 'package:joint_stats_official/my_values.dart';
+import 'package:joint_stats_official/result.dart';
 import 'package:joint_stats_official/sjc.dart';
 import 'package:joint_stats_official/user_profile.dart';
 

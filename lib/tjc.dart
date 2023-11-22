@@ -1,8 +1,9 @@
   import 'package:flutter/material.dart';
-import 'package:joint_stats_official/haq.dart';
+import 'package:joint_stats_official/my_values.dart';
 
   class TJC extends StatefulWidget {
     const TJC({super.key});
+    
 
     @override
     State<TJC> createState() => _TJCState();
@@ -18,11 +19,7 @@ import 'package:joint_stats_official/haq.dart';
       });
     }
 
-
-    @override
-    Widget build(BuildContext context) {
-      screenWidth = MediaQuery.of(context).size.width;
-      screenHeight = MediaQuery.of(context).size.height;
+   
 
       List<Point> points = [
         // Right
@@ -35,15 +32,15 @@ import 'package:joint_stats_official/haq.dart';
         Point(id: 7, x: 69, y: 274, size: 10, color: Colors.green), //index 2
         Point(id: 8, x: 53, y: 253, size: 10, color: Colors.green), //middle 1
         Point(id: 9, x: 53, y: 278, size: 10, color: Colors.green), //middle 2
-        Point(id: 11, x: 35, y: 273, size: 10, color: Colors.green), //ring 2
-        Point(id: 10, x: 35, y: 251, size: 10, color: Colors.green), //ring 1
+        Point(id: 10, x: 35, y: 273, size: 10, color: Colors.green), //ring 2
+        Point(id: 11, x: 35, y: 251, size: 10, color: Colors.green), //ring 1
         Point(id: 12, x: 23, y: 240, size: 10, color: Colors.green), //pinky 1
         Point(id: 13, x: 23, y: 262, size: 10, color: Colors.green), //pinky 2
         Point(id: 14, x: 101 , y: 276, size: 29, color: Colors.green), //knee
         // Left
         Point(id: 15, x: 216, y: 106, size: 27, color: Colors.green), //shoulder
         Point(id: 16, x: 244, y: 161, size: 27, color: Colors.green), //elbow
-        Point(id: 15, x: 264, y: 210, size: 21.5, color: Colors.green), //wrist
+        Point(id: 17, x: 264, y: 210, size: 21.5, color: Colors.green), //wrist
         Point(id: 18, x: 244, y: 227, size: 9.3, color: Colors.green), //thump 1
         Point(id: 19, x: 225, y: 235, size: 10, color: Colors.green), //thump 2
         Point(id: 20, x: 252, y: 251, size: 10, color: Colors.green), //index 1
@@ -54,7 +51,7 @@ import 'package:joint_stats_official/haq.dart';
         Point(id: 25, x: 286, y: 273, size: 10, color: Colors.green), //ring 2
         Point(id: 26, x: 298, y: 240, size: 10, color: Colors.green), //pinky 1
         Point(id: 27, x: 298, y: 261, size: 10, color: Colors.green), //pinky 2
-        Point(id: 18, x: 202, y: 276, size: 29, color: Colors.green), //knee
+        Point(id: 28, x: 202, y: 276, size: 29, color: Colors.green), //knee
       ];
 
       void handlePointClick(int id) {
@@ -65,6 +62,11 @@ import 'package:joint_stats_official/haq.dart';
         });
       }
 
+
+
+    @override
+    Widget build(BuildContext context) {
+      
       return Scaffold(
         appBar: AppBar(
           title: const Text("Tender Joint Count (0–28)"),
@@ -74,7 +76,7 @@ import 'package:joint_stats_official/haq.dart';
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => HAQ()),
+                    MaterialPageRoute(builder: (context) => MyValuesPage()),
                   );
                 }),
           ],

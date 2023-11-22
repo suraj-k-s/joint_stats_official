@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:joint_stats_official/emoji.dart';
 
 class Pass extends StatefulWidget {
   const Pass({Key? key}) : super(key: key);
@@ -23,17 +24,11 @@ class _PassState extends State<Pass> {
           IconButton(
               icon: Icon(Icons.arrow_forward),
               onPressed: () {
-                // Navigator.pushReplacement(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => Pass()),
-                // );
-                Fluttertoast.showToast(
-                  msg: 'Please Check your Network and try again',
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.BOTTOM,
-                  backgroundColor: Colors.red,
-                  textColor: Colors.white,
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => MoodPage()),
                 );
+               
               }),
         ],
       ),

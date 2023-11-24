@@ -72,6 +72,11 @@ class _RegistrationState extends State<Registration> {
             'email': _emailController.text,
             'password': _passwordController.text,
             'profileImageUrl': _imageUrl,
+            'age':'',
+            'durationOfRA':'',
+            'gender':'',
+            'nextAppointment':'',
+            'previousAppointment':'',
           });
 
           Navigator.pushReplacement(

@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -11,9 +13,14 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  String? selectedGender;
   String name = 'Loading...';
   String email = 'Loading...';
-  String profileImageUrl = 'assets/anonymous.jpg'; // Default image path
+  String profileImageUrl = 'assets/anonymous.jpg'; 
+  String? selectedAge;
+  String? selectedDurationRA;
+  DateTime? selectedPreviousDate;
+  DateTime? selectedNextDate;
 
   
 
@@ -41,6 +48,18 @@ class _ProfilePageState extends State<ProfilePage> {
             if (userData?['profileImageUrl'] != null) {
               profileImageUrl = userData?['profileImageUrl'];
             }
+            selectedGender = userData?['gender'];
+            selectedAge = userData?['age'];
+            selectedDurationRA = userData?['durationOfRA'];
+            final previousAppt = userData?['previousAppointment'];
+            final nextAppt = userData?['nextAppointment'];
+
+            if (previousAppt != null) {
+              selectedPreviousDate = DateFormat('dd-MM-yyyy').parse(previousAppt);
+            }
+            if (nextAppt != null) {
+              selectedNextDate = DateFormat('dd-MM-yyyy').parse(nextAppt);
+            }
             nameController.text = name;
             emailController.text = email;
           });
@@ -51,6 +70,11 @@ class _ProfilePageState extends State<ProfilePage> {
       });
     }
   }
+  void updateSelectedGender(String gender) {
+    setState(() {
+      selectedGender = gender;
+    });
+  }
 
   void updateProfile() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -60,9 +84,18 @@ class _ProfilePageState extends State<ProfilePage> {
       final userDoc =
           FirebaseFirestore.instance.collection('users').doc(userId);
 
-      userDoc.update({
+       await userDoc.update({
         'name': nameController.text,
         'email': emailController.text,
+        'gender': selectedGender,
+        'age': selectedAge,
+        'durationOfRA': selectedDurationRA,
+        'previousAppointment': selectedPreviousDate != null
+            ? DateFormat('dd-MM-yyyy').format(selectedPreviousDate!)
+            : null,
+        'nextAppointment': selectedNextDate != null
+            ? DateFormat('dd-MM-yyyy').format(selectedNextDate!)
+            : null,
       }).then((_) async {
         // Update the local state with the new data.
         setState(() {
@@ -116,7 +149,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
- String? selectedAge;
 
   List<String> generateAgeOptions() {
     List<String> ageOptions = [];
@@ -128,21 +160,46 @@ class _ProfilePageState extends State<ProfilePage> {
 
   DateTime? selectedDate;
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+  Future<DateTime?> _selectDate(BuildContext context) async {
+    return showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(1900),
       lastDate: DateTime(2100),
     );
-    if (picked != null) {
-      setState(() {
-        selectedDate = picked;
-      });
+  }
+  String _formatDate(DateTime? date) {
+    if (date != null) {
+      return DateFormat('dd-MM-yyyy').format(date);
     }
+    return 'Select Date';
   }
 
-
+ Widget buildGenderButton(IconData icon, String gender) {
+    return OutlinedButton(
+      style: ButtonStyle(
+        side: MaterialStateProperty.all(BorderSide(
+          width: 1,
+          color: selectedGender == gender ? Colors.blue : Color(0xff4338CA),
+        )),
+        backgroundColor: MaterialStateProperty.resolveWith<Color>(
+          (Set<MaterialState> states) {
+            if (states.contains(MaterialState.pressed) ||
+                states.contains(MaterialState.selected)) {
+              return Colors.blue.withOpacity(0.2);
+            } else if (selectedGender == gender) {
+              return Colors.blue.withOpacity(0.1);
+            }
+            return Colors.transparent;
+          },
+        ),
+      ),
+      onPressed: () {
+        updateSelectedGender(gender);
+      },
+      child: Icon(icon),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -268,42 +325,9 @@ class _ProfilePageState extends State<ProfilePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                OutlinedButton(
-                  style: ButtonStyle(
-                    elevation: MaterialStateProperty.all(0),
-                    alignment: Alignment.center,
-                    side: MaterialStateProperty.all(const BorderSide(
-                        width: 1, color: Color(0xff4338CA))),
-                    padding: MaterialStateProperty.all(const EdgeInsets.only(
-                        right: 75, left: 75, top: 12.5, bottom: 12.5)),
-                    backgroundColor:
-                        MaterialStateProperty.all(Colors.transparent),
-                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0))),
-                  ),
-                  onPressed: () {
-                    // Handle male gender selection
-                  },
-                  child: const Icon(Icons.male),
-                ),
-                OutlinedButton(
-                  style: ButtonStyle(
-                    elevation: MaterialStateProperty.all(0),
-                    alignment: Alignment.center,
-                    side: MaterialStateProperty.all(const BorderSide(
-                        width: 1, color: Color(0xff4338CA))),
-                    padding: MaterialStateProperty.all(const EdgeInsets.only(
-                        right: 75, left: 75, top: 12.5, bottom: 12.5)),
-                    backgroundColor:
-                        MaterialStateProperty.all(Colors.transparent),
-                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0))),
-                  ),
-                  onPressed: () {
-                    // Handle female gender selection
-                  },
-                  child: const Icon(Icons.female),
-                ),
+                buildGenderButton(Icons.male, 'male'), // Male button
+                buildGenderButton(Icons.female, 'female'), // Female button
+                buildGenderButton(Icons.transgender, 'others'), // Female button
               ],
             ),
             const SizedBox(height: 20.0),
@@ -311,16 +335,13 @@ class _ProfilePageState extends State<ProfilePage> {
             // Add more details and edit buttons as needed.
             SizedBox(height: 20),
             const SizedBox(height: 10.0),
-              Row(
+             // Age
+            Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      "Age",
-                      style: TextStyle(fontSize: 18.0),
-                      textAlign: TextAlign.center,
-                    ),
+                  const Text(
+                    "Age                   ",
+                    style: TextStyle(fontSize: 18.0),
                   ),
                   DropdownButton<String>(
                     value: selectedAge,
@@ -329,80 +350,97 @@ class _ProfilePageState extends State<ProfilePage> {
                         selectedAge = newValue;
                       });
                     },
-                    items: generateAgeOptions().map<DropdownMenuItem<String>>(
-                      (String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      },
-                    ).toList(),
+                    items: generateAgeOptions()
+                        .map<DropdownMenuItem<String>>(
+                          (String value) => DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          ),
+                        )
+                        .toList(),
                   ),
                 ],
               ),
               const SizedBox(height: 10.0),
+
+              // Duration of RA
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      "Duration of RA",
-                      style: TextStyle(fontSize: 18.0),
-                      textAlign: TextAlign.center,
-                    ),
+                  const Text(
+                    "Duration of RA",
+                    style: TextStyle(fontSize: 18.0),
                   ),
                   DropdownButton<String>(
-                    value: selectedAge,
+                    value: selectedDurationRA, // Use separate state variable
                     onChanged: (String? newValue) {
                       setState(() {
-                        selectedAge = newValue;
+                        selectedDurationRA = newValue;
                       });
                     },
-                    items: generateAgeOptions().map<DropdownMenuItem<String>>(
-                      (String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      },
-                    ).toList(),
+                    items: generateAgeOptions()
+                        .map<DropdownMenuItem<String>>(
+                          (String value) => DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          ),
+                        )
+                        .toList(),
                   ),
                 ],
               ),
               const SizedBox(height: 10.0),
-              Row(
+            // Appointment (Previous & Next)
+            Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      "Appt(Previous)",
-                      style: TextStyle(fontSize: 18.0),
-                      textAlign: TextAlign.center,
-                    ),
+                  Column(
+                    children: [
+                      const Text(
+                        "Appt(Previous)",
+                        style: TextStyle(fontSize: 18.0),
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          final DateTime? picked = await _selectDate(context);
+                          if (picked != null) {
+                            setState(() {
+                              selectedPreviousDate = picked;
+                            });
+                          }
+                        },
+                        child: Text(
+                          selectedPreviousDate != null
+                              ? _formatDate(selectedPreviousDate)
+                              : 'Select Date',
+                        ),
+                      ),
+                    ],
                   ),
-                  ElevatedButton(
-                    onPressed: () => _selectDate(context),
-                    child: Text('Select Date'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      "Appt(Next)",
-                      style: TextStyle(fontSize: 18.0),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => _selectDate(context),
-                    child: Text('Select Date'),
+
+                  // Appointment (Next)
+                  Column(
+                    children: [
+                      const Text(
+                        "Appt(Next)",
+                        style: TextStyle(fontSize: 18.0),
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          final DateTime? picked = await _selectDate(context);
+                          if (picked != null) {
+                            setState(() {
+                              selectedNextDate = picked;
+                            });
+                          }
+                        },
+                        child: Text(
+                          selectedNextDate != null
+                              ? _formatDate(selectedNextDate)
+                              : 'Select Date',
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

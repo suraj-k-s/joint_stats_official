@@ -1,16 +1,55 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:joint_stats_official/emoji.dart';
-import 'package:joint_stats_official/my_values.dart';
-import 'package:joint_stats_official/result.dart';
+import 'package:joint_stats_official/login_page.dart';
 import 'package:joint_stats_official/sjc.dart';
 import 'package:joint_stats_official/user_profile.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+    String profileImageUrl = 'assets/anonymous.jpg'; // Set initial value here
+
+ @override
+void initState() {
+  super.initState();
+  // Fetch profile image URL on init
+  fetchProfileImageUrl().then((imageUrl) {
+    setState(() {
+      profileImageUrl = imageUrl;
+    });
+  });
+}
+
+Future<String> fetchProfileImageUrl() async {
+  final user = FirebaseAuth.instance.currentUser;
+  final userId = user?.uid;
+  String imageUrl = 'assets/anonymous.jpg'; // Set default image
+
+  if (userId != null) {
+    final userDoc = FirebaseFirestore.instance.collection('users').doc(userId);
+    try {
+      final documentSnapshot = await userDoc.get();
+      if (documentSnapshot.exists) {
+        final userData = documentSnapshot.data();
+        if (userData != null && userData['profileImageUrl'] != null) {
+          imageUrl = userData['profileImageUrl'];
+        }
+      }
+    } catch (error) {
+      // Handle any potential errors
+      print('Error retrieving user data: $error');
+    }
+  }
+  return imageUrl;
+}
+
   @override
   Widget build(BuildContext context) {
-    String? userProfilePhotoUrl = FirebaseAuth.instance.currentUser?.photoURL;
-
+      
     return Scaffold(
       appBar: AppBar(
         title: Text('Dashboard'),
@@ -24,12 +63,10 @@ class DashboardPage extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: CircleAvatar(
-                backgroundImage: userProfilePhotoUrl != null
-                    ? NetworkImage(
-                        userProfilePhotoUrl) // Use the user's profile photo URL
-                    : AssetImage('assets/anonymous.jpg')
-                        as ImageProvider, // Placeholder image
-              ),
+              backgroundImage: profileImageUrl != "assets/anonymous.jpg"
+                  ? NetworkImage(profileImageUrl)
+                  : AssetImage(profileImageUrl) as ImageProvider,
+            ),
             ),
           ),
         ],
@@ -132,9 +169,14 @@ class DashboardPage extends StatelessWidget {
             leading: Icon(Icons.logout),
             title: Text('Logout'),
             onTap: () {
-              // Implement your logout logic here
+              FirebaseAuth.instance.signOut().then((value) {
               Navigator.pop(context); // Close the menu
-              // Add your logout logic here
+              // Navigate to the login page or perform any other necessary action
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => Login()));
+            }).catchError((error) {
+              print('Error logging out: $error');
+            });
             },
           ),
         ),

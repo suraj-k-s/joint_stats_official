@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:joint_stats_official/login_page.dart';
+import 'package:joint_stats_official/dashboard.dart';
 import 'package:lottie/lottie.dart';
 import 'dart:async';
 
@@ -16,16 +17,13 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     if (FirebaseAuth.instance.currentUser != null) {
-      // User is already logged in, navigate to HomePage
       Timer(const Duration(seconds: 6), () {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const Login()),
+          MaterialPageRoute(builder: (context) => DashboardPage()),
         );
       });
     } else {
-      // User is not logged in, navigate to LoginPage
-
       Timer(const Duration(seconds: 6), () {
         Navigator.pushReplacement(
           context,
@@ -50,17 +48,3 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
-
-
-//        child: ColorFiltered(
-//           colorFilter: const ColorFilter.mode(
-//             Colors.blue, // Set the color of the animation here
-//             BlendMode.modulate,
-//           ),
-//           child: Lottie.asset(
-//             'assets/splashScreen.json',
-//             width: 400,
-//             height: 600,
-//             fit: BoxFit.fill,
-//           ),
-//         ),

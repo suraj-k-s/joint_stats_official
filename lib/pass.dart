@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:joint_stats_official/emoji.dart';
 
 class Pass extends StatefulWidget {

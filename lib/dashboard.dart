@@ -135,7 +135,7 @@ Future<String> fetchProfileImageUrl() async {
 
   void _showProfilePopupMenu(BuildContext context) {
     final RenderBox overlay =
-        Overlay.of(context)!.context.findRenderObject() as RenderBox;
+        Overlay.of(context).context.findRenderObject() as RenderBox;
 
     final Offset iconPosition = overlay.localToGlobal(
       Offset(0, kToolbarHeight), // Adjust Y offset to place it below the icon

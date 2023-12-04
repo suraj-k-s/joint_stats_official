@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ResultPage extends StatelessWidget {
   @override
@@ -23,7 +24,13 @@ class ResultPage extends StatelessWidget {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Handle download action
+                Fluttertoast.showToast(
+                  msg: 'Download Failed',
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.white,
+                );
               },
               child: Text('Download'),
             ),

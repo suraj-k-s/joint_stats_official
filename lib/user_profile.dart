@@ -6,7 +6,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
-
 class ProfilePage extends StatefulWidget {
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -16,13 +15,11 @@ class _ProfilePageState extends State<ProfilePage> {
   String? selectedGender;
   String name = 'Loading...';
   String email = 'Loading...';
-  String profileImageUrl = 'assets/anonymous.jpg'; 
+  String profileImageUrl = 'assets/anonymous.jpg';
   String? selectedAge;
   String? selectedDurationRA;
   DateTime? selectedPreviousDate;
   DateTime? selectedNextDate;
-
-  
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -55,7 +52,8 @@ class _ProfilePageState extends State<ProfilePage> {
             final nextAppt = userData?['nextAppointment'];
 
             if (previousAppt != null) {
-              selectedPreviousDate = DateFormat('dd-MM-yyyy').parse(previousAppt);
+              selectedPreviousDate =
+                  DateFormat('dd-MM-yyyy').parse(previousAppt);
             }
             if (nextAppt != null) {
               selectedNextDate = DateFormat('dd-MM-yyyy').parse(nextAppt);
@@ -70,6 +68,7 @@ class _ProfilePageState extends State<ProfilePage> {
       });
     }
   }
+
   void updateSelectedGender(String gender) {
     setState(() {
       selectedGender = gender;
@@ -84,7 +83,7 @@ class _ProfilePageState extends State<ProfilePage> {
       final userDoc =
           FirebaseFirestore.instance.collection('users').doc(userId);
 
-       await userDoc.update({
+      await userDoc.update({
         'name': nameController.text,
         'email': emailController.text,
         'gender': selectedGender,
@@ -149,7 +148,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-
   List<String> generateAgeOptions() {
     List<String> ageOptions = [];
     for (int age = 1; age <= 100; age++) {
@@ -168,6 +166,7 @@ class _ProfilePageState extends State<ProfilePage> {
       lastDate: DateTime(2100),
     );
   }
+
   String _formatDate(DateTime? date) {
     if (date != null) {
       return DateFormat('dd-MM-yyyy').format(date);
@@ -175,7 +174,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return 'Select Date';
   }
 
- Widget buildGenderButton(IconData icon, String gender) {
+  Widget buildGenderButton(IconData icon, String gender) {
     return OutlinedButton(
       style: ButtonStyle(
         side: MaterialStateProperty.all(BorderSide(
@@ -200,6 +199,7 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Icon(icon),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -331,120 +331,120 @@ class _ProfilePageState extends State<ProfilePage> {
               ],
             ),
             const SizedBox(height: 20.0),
-            
+
             // Add more details and edit buttons as needed.
             SizedBox(height: 20),
             const SizedBox(height: 10.0),
-             // Age
+            // Age
             Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const Text(
-                    "Age                   ",
-                    style: TextStyle(fontSize: 18.0),
-                  ),
-                  DropdownButton<String>(
-                    value: selectedAge,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedAge = newValue;
-                      });
-                    },
-                    items: generateAgeOptions()
-                        .map<DropdownMenuItem<String>>(
-                          (String value) => DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10.0),
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                const Text(
+                  "Age                   ",
+                  style: TextStyle(fontSize: 18.0),
+                ),
+                DropdownButton<String>(
+                  value: selectedAge,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedAge = newValue;
+                    });
+                  },
+                  items: generateAgeOptions()
+                      .map<DropdownMenuItem<String>>(
+                        (String value) => DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10.0),
 
-              // Duration of RA
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const Text(
-                    "Duration of RA",
-                    style: TextStyle(fontSize: 18.0),
-                  ),
-                  DropdownButton<String>(
-                    value: selectedDurationRA, // Use separate state variable
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedDurationRA = newValue;
-                      });
-                    },
-                    items: generateAgeOptions()
-                        .map<DropdownMenuItem<String>>(
-                          (String value) => DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10.0),
+            // Duration of RA
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                const Text(
+                  "Duration of RA",
+                  style: TextStyle(fontSize: 18.0),
+                ),
+                DropdownButton<String>(
+                  value: selectedDurationRA, // Use separate state variable
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedDurationRA = newValue;
+                    });
+                  },
+                  items: generateAgeOptions()
+                      .map<DropdownMenuItem<String>>(
+                        (String value) => DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10.0),
             // Appointment (Previous & Next)
             Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Column(
-                    children: [
-                      const Text(
-                        "Appt(Previous)",
-                        style: TextStyle(fontSize: 18.0),
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Column(
+                  children: [
+                    const Text(
+                      "Appt(Previous)",
+                      style: TextStyle(fontSize: 18.0),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        final DateTime? picked = await _selectDate(context);
+                        if (picked != null) {
+                          setState(() {
+                            selectedPreviousDate = picked;
+                          });
+                        }
+                      },
+                      child: Text(
+                        selectedPreviousDate != null
+                            ? _formatDate(selectedPreviousDate)
+                            : 'Select Date',
                       ),
-                      ElevatedButton(
-                        onPressed: () async {
-                          final DateTime? picked = await _selectDate(context);
-                          if (picked != null) {
-                            setState(() {
-                              selectedPreviousDate = picked;
-                            });
-                          }
-                        },
-                        child: Text(
-                          selectedPreviousDate != null
-                              ? _formatDate(selectedPreviousDate)
-                              : 'Select Date',
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
+                ),
 
-                  // Appointment (Next)
-                  Column(
-                    children: [
-                      const Text(
-                        "Appt(Next)",
-                        style: TextStyle(fontSize: 18.0),
+                // Appointment (Next)
+                Column(
+                  children: [
+                    const Text(
+                      "Appt(Next)",
+                      style: TextStyle(fontSize: 18.0),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        final DateTime? picked = await _selectDate(context);
+                        if (picked != null) {
+                          setState(() {
+                            selectedNextDate = picked;
+                          });
+                        }
+                      },
+                      child: Text(
+                        selectedNextDate != null
+                            ? _formatDate(selectedNextDate)
+                            : 'Select Date',
                       ),
-                      ElevatedButton(
-                        onPressed: () async {
-                          final DateTime? picked = await _selectDate(context);
-                          if (picked != null) {
-                            setState(() {
-                              selectedNextDate = picked;
-                            });
-                          }
-                        },
-                        child: Text(
-                          selectedNextDate != null
-                              ? _formatDate(selectedNextDate)
-                              : 'Select Date',
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
             // Update Button
             ElevatedButton(
               onPressed: () {

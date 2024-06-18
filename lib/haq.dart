@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:joint_stats_official/pass.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HAQ extends StatefulWidget {
   const HAQ({Key? key}) : super(key: key);
@@ -12,14 +15,14 @@ class _HAQState extends State<HAQ> {
   List<Question> questions = [];
   int sum = 0;
   bool showSum = false;
+  String? checkupId;
+  bool _checkupLoader = true;
 
   @override
   void initState() {
     super.initState();
     questions = getQuestions();
-    setState(() {
-      
-    });
+    setState(() {});
   }
 
   List<Question> getQuestions() {
@@ -99,119 +102,215 @@ class _HAQState extends State<HAQ> {
     return true;
   }
 
+  Future<void> nextPage() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      checkupId = prefs.getString('checkupId');
+      setState(() {
+        _checkupLoader = false;
+      });
+      if (checkupId == null) {
+        throw Exception("No checkup id");
+      }
+      double di = sum / 12;
+      await FirebaseFirestore.instance
+          .collection('checkup')
+          .doc(checkupId)
+          .update({
+        'di': di,
+      });
+      Fluttertoast.showToast(
+        msg: 'HAQ Updated',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const Pass()),
+      );
+    } catch (e) {
+      setState(() {
+        _checkupLoader = true;
+      });
+      Fluttertoast.showToast(
+        msg: 'HAQ Updatation failed',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+      print("Error going to next page: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('H A Q'),
         actions: [
-          IconButton(
-              icon: Icon(Icons.arrow_forward),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => Pass()),
-                );
-              }),
+          if (showSum)
+            IconButton(
+                icon: Icon(Icons.arrow_forward),
+                onPressed: () {
+                  nextPage();
+                }),
         ],
       ),
-      body: Column(
-        children: [
-          const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text(
-              'H  A  Q',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: DataTable(
-                columns: List.generate(
-                  6,
-                  (index) {
-                    if (index == 5) {
-                      return const DataColumn(
-                        label: Text('Score'),
-                      );
-                    } else if (index == 0) {
-                      return const DataColumn(
-                        label: Text('Questions'),
-                      );
-                    } else {
-                      return DataColumn(
-                        label: Text('${index - 1}'),
-                      );
-                    }
-                  },
-                ),
-                rows: List.generate(
-                  questions.length,
-                  (index) => DataRow(
-                    cells: List.generate(
-                      6,
-                      (cellIndex) {
-                        if (cellIndex == 5) {
-                          return DataCell(
-                            Text('${questions[index].answer ?? ""}'),
-                          );
-                        } else if (cellIndex == 1 ||
-                            cellIndex == 2 ||
-                            cellIndex == 3 ||
-                            cellIndex == 4) {
-                          return DataCell(
-                            Radio<int>(
-                              value: cellIndex - 1,
-                              groupValue: questions[index].answer,
-                              onChanged: (value) {
-                                selectAnswer(index, value);
-                              },
-                            ),
-                          );
-                        } else {
-                          return DataCell(
-                            Tooltip(
-                              message: questions[index].value,
-                              child: Text(
-                                '${questions[index].question}',
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                              ),
-                            ),
-                          );
-                        }
-                      },
-                    ),
+      body: _checkupLoader
+          ? Column(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    'H  A  Q',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),
-              ),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: allQuestionsAnswered()
-                ? () {
-                    calculateSum();
-                    setState(() {
-                      showSum = true;
-                    });
-                  }
-                : null,
-            child: Text('Submit'),
-          ),
-          if (showSum)
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'D.I: ${(sum / 12).toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                Expanded(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      // Get the total width available for the table
+                      final tableWidth = constraints.maxWidth;
+                      // Define the widths for each column
+                      final columnWidths = List.generate(5, (index) {
+                        if (index == 0) {
+                          return tableWidth *
+                              0.22; // 40% of the table width for the Questions column
+                        } else if (index == 4) {
+                          return tableWidth *
+                              0.2; // 20% of the table width for the Score column
+                        } else {
+                          return tableWidth *
+                              0.18; // The rest 40% of the table width equally divided among the other columns
+                        }
+                      });
+
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(minWidth: tableWidth),
+                            child: DataTable(
+                              columnSpacing: 0,
+                              columns: List.generate(
+                                5,
+                                (index) {
+                                  if (index == 4) {
+                                    return const DataColumn(
+                                      label: Text(
+                                        'Score',
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    );
+                                  } else if (index == 0) {
+                                    return const DataColumn(
+                                      label: Text(
+                                        'Questions',
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    );
+                                  } else {
+                                    return DataColumn(
+                                      label: SizedBox(
+                                        width: columnWidths[index],
+                                        child: Text(
+                                          '${index - 1}',
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                              rows: List.generate(
+                                questions.length,
+                                (index) => DataRow(
+                                  cells: List.generate(
+                                    5,
+                                    (cellIndex) {
+                                      if (cellIndex == 4) {
+                                        return DataCell(
+                                          Center(
+                                            child: Text(
+                                                '${questions[index].answer ?? ""}'),
+                                          ),
+                                        );
+                                      } else if (cellIndex == 1 ||
+                                          cellIndex == 2 ||
+                                          cellIndex == 3) {
+                                        return DataCell(
+                                          SizedBox(
+                                            width: columnWidths[cellIndex],
+                                            child: Radio<int>(
+                                              value: cellIndex - 1,
+                                              groupValue:
+                                                  questions[index].answer,
+                                              onChanged: (value) {
+                                                selectAnswer(index, value);
+                                                setState(() {
+                                                  showSum = false;
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                        );
+                                      } else {
+                                        return DataCell(
+                                          SizedBox(
+                                            width: columnWidths[cellIndex],
+                                            child: Tooltip(
+                                              message: questions[index].value,
+                                              child: Text(
+                                                '${questions[index].question}',
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 1,
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
+                Padding(
+                  padding: const EdgeInsets.all(6.0),
+                  child: showSum
+                      ? Text(
+                          'D.I: ${(sum / 12).toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
+                      : ElevatedButton(
+                          onPressed: allQuestionsAnswered()
+                              ? () {
+                                  calculateSum();
+                                  setState(() {
+                                    showSum = true;
+                                  });
+                                }
+                              : null,
+                          child: Text('Submit'),
+                        ),
+                ),
+              ],
+            )
+          : const Center(
+              child: CircularProgressIndicator(),
             ),
-        ],
-      ),
     );
   }
 }

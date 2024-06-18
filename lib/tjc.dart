@@ -1,166 +1,299 @@
-  import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:joint_stats_official/my_values.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-  class TJC extends StatefulWidget {
-    const TJC({super.key});
-    
+class TJC extends StatefulWidget {
+  const TJC({super.key});
 
-    @override
-    State<TJC> createState() => _TJCState();
+  @override
+  State<TJC> createState() => _TJCState();
+}
+
+class _TJCState extends State<TJC> {
+
+  String? checkupId;
+  bool _checkupLoader = false;
+
+  @override
+  void initState() {
+    super.initState();
+    getCheckupId();
   }
 
-  class _TJCState extends State<TJC> {
-    late double screenWidth;
-    late double screenHeight;
-    void initState() {
-      super.initState();
-      setState(() {
-        
-      });
-    }
-
-   
-
-      List<Point> points = [
-        // Right
-        Point(id: 1, x: 86, y: 106, size: 27, color: Colors.green), //shoulder
-        Point(id: 2, x: 61, y: 161, size: 27, color: Colors.green), //elbow
-        Point(id: 3, x: 45, y: 209, size: 21.5, color: Colors.green), //wrist
-        Point(id: 4, x: 77, y: 228, size: 9.3, color: Colors.green), //thump 1
-        Point(id: 5, x: 96, y: 234, size: 10, color: Colors.green), //thump 2
-        Point(id: 6, x: 69, y: 251, size: 10, color: Colors.green), //index 1
-        Point(id: 7, x: 69, y: 274, size: 10, color: Colors.green), //index 2
-        Point(id: 8, x: 53, y: 253, size: 10, color: Colors.green), //middle 1
-        Point(id: 9, x: 53, y: 278, size: 10, color: Colors.green), //middle 2
-        Point(id: 10, x: 35, y: 273, size: 10, color: Colors.green), //ring 2
-        Point(id: 11, x: 35, y: 251, size: 10, color: Colors.green), //ring 1
-        Point(id: 12, x: 23, y: 240, size: 10, color: Colors.green), //pinky 1
-        Point(id: 13, x: 23, y: 262, size: 10, color: Colors.green), //pinky 2
-        Point(id: 14, x: 101 , y: 276, size: 29, color: Colors.green), //knee
-        // Left
-        Point(id: 15, x: 216, y: 106, size: 27, color: Colors.green), //shoulder
-        Point(id: 16, x: 244, y: 161, size: 27, color: Colors.green), //elbow
-        Point(id: 17, x: 264, y: 210, size: 21.5, color: Colors.green), //wrist
-        Point(id: 18, x: 244, y: 227, size: 9.3, color: Colors.green), //thump 1
-        Point(id: 19, x: 225, y: 235, size: 10, color: Colors.green), //thump 2
-        Point(id: 20, x: 252, y: 251, size: 10, color: Colors.green), //index 1
-        Point(id: 21, x: 252, y: 273, size: 10, color: Colors.green), //index 2
-        Point(id: 22, x: 269, y: 253, size: 10, color: Colors.green), //middle 1
-        Point(id: 23, x: 269, y: 278, size: 10, color: Colors.green), //middle 2
-        Point(id: 24, x: 286, y: 251, size: 10, color: Colors.green), //ring 1
-        Point(id: 25, x: 286, y: 273, size: 10, color: Colors.green), //ring 2
-        Point(id: 26, x: 298, y: 240, size: 10, color: Colors.green), //pinky 1
-        Point(id: 27, x: 298, y: 261, size: 10, color: Colors.green), //pinky 2
-        Point(id: 28, x: 202, y: 276, size: 29, color: Colors.green), //knee
-      ];
-
-      void handlePointClick(int id) {
-        setState(() {
-          points = points.map((point) {
-            return point.id == id ? point.copyWith(color: Colors.red) : point;
-          }).toList();
-        });
-      }
-
-
-
-    @override
-    Widget build(BuildContext context) {
-      
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text("Tender Joint Count (0–28)"),
-          actions: [
-            IconButton(
-                icon: Icon(Icons.arrow_forward),
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => MyValuesPage()),
-                  );
-                }),
-          ],
-        ),
-        backgroundColor: Colors.white,
-        body: InteractiveViewer(
-          minScale: 0.1,
-          maxScale: 5.0,
-          child: Center(
-            child: Stack(
-              children: [
-                SizedBox(
-                    height: 360,
-                    width: 460,
-                    child: Image.asset('assets/sjc.jpg', fit: BoxFit.fill)),
-                for (var point in points)
-                  ClickablePoint(
-                    point: point,
-                    onTap: handlePointClick,
-                  ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-  }
-
-  class ClickablePoint extends StatelessWidget {
-    final Point point;
-    final Function(int) onTap;
-
-    const ClickablePoint({super.key, required this.point, required this.onTap});
-
-    @override
-    Widget build(BuildContext context) {
-      return Positioned(
-        left: point.x,
-        top: point.y,
-        child: GestureDetector(
-          onTap: () {
-            onTap(point.id);
-          },
-          child: Container(
-            width: point.size,
-            height: point.size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: point.color,
-            ),
-          ),
-        ),
-      );
-    }
-  }
-
-  class Point {
-    final int id;
-    final double x;
-    final double y;
-    final double size;
-    final Color color;
-
-    Point({
-      required this.id,
-      required this.x,
-      required this.y,
-      required this.size,
-      this.color = Colors.green,
+  Future<void> getCheckupId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _checkupLoader  = true;
+      checkupId = prefs.getString('checkupId');
     });
+    print('CheckupId: $checkupId');
+  }
 
-    Point copyWith({
-      int? id,
-      double? x,
-      double? y,
-      double? size,
-      Color? color,
-    }) {
-      return Point(
-        id: id ?? this.id,
-        x: x ?? this.x,
-        y: y ?? this.y,
-        size: size ?? this.size,
-        color: color ?? this.color,
+  Future<void> nextPage() async {
+    try {
+      setState(() {
+        _checkupLoader = false;
+      });
+      if (checkupId == null) {
+        throw Exception("No checkup id");
+      }
+      await FirebaseFirestore.instance
+          .collection('checkup').doc(checkupId).update({'tjc': selectedPoints.length});
+      Fluttertoast.showToast(
+        msg: 'Tender Joint Count Updated',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
       );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const MyValuesPage()),
+      );
+    } catch (e) {
+      setState(() {
+        _checkupLoader = true;
+      });
+      Fluttertoast.showToast(
+        msg: 'Tender Joint Count Updatation failed',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+      print("Error going to next page: $e");
     }
   }
+
+  List<int> selectedPoints = [];
+  List<Point> points = [
+    // Right
+    Point(
+        id: 1, x: 74, y: 107, size: 27, color: Colors.green), // shoulder ready
+    Point(
+        id: 2, x: 48.6, y: 161.4, size: 27, color: Colors.green), // elbow Ready
+    Point(id: 3, x: 27, y: 208.5, size: 27, color: Colors.green), // wrist ready
+    Point(
+        id: 4, x: 59.5, y: 231, size: 10, color: Colors.green), // thumb 1 ready
+    Point(
+        id: 5,
+        x: 82.5,
+        y: 238.5,
+        size: 10,
+        color: Colors.green), // thumb 2 ready
+    Point(
+        id: 6, x: 49.5, y: 249, size: 10, color: Colors.green), // index 1 ready
+    Point(
+        id: 7, x: 49.5, y: 273, size: 10, color: Colors.green), // index 2 Ready
+    Point(
+        id: 8,
+        x: 37,
+        y: 255.5,
+        size: 10,
+        color: Colors.green), // middle 1 ready
+    Point(
+        id: 9,
+        x: 37,
+        y: 279.5,
+        size: 10,
+        color: Colors.green), // middle 2 ready
+    Point(
+        id: 10, x: 23, y: 276.5, size: 10, color: Colors.green), // ring 2 ready
+    Point(
+        id: 11,
+        x: 22.8,
+        y: 252.5,
+        size: 10,
+        color: Colors.green), // ring 1 ready
+    Point(
+        id: 12,
+        x: 12.5,
+        y: 243,
+        size: 10,
+        color: Colors.green), // pinky 1 ready
+    Point(
+        id: 13,
+        x: 12.3,
+        y: 267,
+        size: 10,
+        color: Colors.green), // pinky 2 ready
+    Point(
+        id: 14, x: 85.5, y: 281.5, size: 27, color: Colors.green), // knee ready
+    // Left
+    Point(
+        id: 15,
+        x: 207,
+        y: 107,
+        size: 27,
+        color: Colors.green), // shoulder ready
+    Point(id: 16, x: 232, y: 161, size: 27, color: Colors.green), // elbow ready
+    Point(
+        id: 17, x: 254, y: 208.5, size: 27, color: Colors.green), // wrist ready
+    Point(
+        id: 18, x: 238, y: 231, size: 10, color: Colors.green), // thumb 1 ready
+    Point(
+        id: 19,
+        x: 215.5,
+        y: 238.5,
+        size: 10,
+        color: Colors.green), // thumb 2 ready
+    Point(
+        id: 20, x: 248, y: 249, size: 10, color: Colors.green), // index 1 ready
+    Point(
+        id: 21, x: 248, y: 273, size: 10, color: Colors.green), // index 2 ready
+    Point(
+        id: 22,
+        x: 261,
+        y: 255.5,
+        size: 10,
+        color: Colors.green), // middle 1 ready
+    Point(
+        id: 23,
+        x: 261,
+        y: 279.5,
+        size: 10,
+        color: Colors.green), // middle 2 ready
+    Point(
+        id: 24,
+        x: 275,
+        y: 252.5,
+        size: 10,
+        color: Colors.green), // ring 1 ready
+    Point(
+        id: 25,
+        x: 275,
+        y: 276.5,
+        size: 10,
+        color: Colors.green), // ring 2 ready
+    Point(
+        id: 26,
+        x: 285.5,
+        y: 243,
+        size: 10,
+        color: Colors.green), // pinky 1 ready
+    Point(
+        id: 27,
+        x: 285.5,
+        y: 267,
+        size: 10,
+        color: Colors.green), // pinky 2 ready
+    Point(
+        id: 28, x: 195, y: 281.5, size: 27, color: Colors.green), // knee ready
+  ];
+
+  void handlePointClick(int id) {
+    setState(() {
+      points = points.map((point) {
+        return point.id == id ? point.copyWith(color: Colors.red) : point;
+      }).toList();
+      if (!selectedPoints.contains(id)) {
+        selectedPoints.add(id);
+        print('Point clicked: $id');
+        print('Clicked points: $selectedPoints');
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Adjust the width and height to match your image size
+    const double imageWidth = 350;
+    const double imageHeight = 350;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Tender Joint Count (0–28)"),
+        actions: [
+          IconButton(
+              icon: const Icon(Icons.arrow_forward),
+              onPressed: () {
+                nextPage();
+              }),
+        ],
+      ),
+      backgroundColor: Colors.white,
+      body: InteractiveViewer(
+        minScale: 0.1,
+        maxScale: 5.0,
+        child: Center(
+          child: Stack(
+            children: [
+              _checkupLoader
+                  ? Stack(
+                      children: [
+                        SizedBox(
+                          width: imageWidth,
+                          height: imageHeight,
+                          child: Image.asset(
+                            'assets/Body.png',
+                            width: imageWidth,
+                            height: imageHeight,
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                        for (var point in points)
+                          Positioned(
+                            left: point.x *
+                                (imageWidth / 350), // Scale the x position
+                            top: point.y *
+                                (imageHeight / 350), // Scale the y position
+                            child: GestureDetector(
+                              onTap: () {
+                                handlePointClick(point.id);
+                              },
+                              child: Container(
+                                width: point.size,
+                                height: point.size,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: point.color,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    )
+                  : const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class Point {
+  final int id;
+  final double x;
+  final double y;
+  final double size;
+  final Color color;
+
+  Point({
+    required this.id,
+    required this.x,
+    required this.y,
+    required this.size,
+    this.color = Colors.green,
+  });
+
+  Point copyWith({
+    int? id,
+    double? x,
+    double? y,
+    double? size,
+    Color? color,
+  }) {
+    return Point(
+      id: id ?? this.id,
+      x: x ?? this.x,
+      y: y ?? this.y,
+      size: size ?? this.size,
+      color: color ?? this.color,
+    );
+  }
+}

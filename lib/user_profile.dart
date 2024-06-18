@@ -7,6 +7,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
+
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -17,12 +19,19 @@ class _ProfilePageState extends State<ProfilePage> {
   String email = 'Loading...';
   String profileImageUrl = 'assets/anonymous.jpg';
   String? selectedAge;
+  String age = '';
+  String durationRA = '';
+  String? previousDate;
+  String? nextDate;
   String? selectedDurationRA;
   DateTime? selectedPreviousDate;
   DateTime? selectedNextDate;
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+
+  final List<String> ages =
+      List<String>.generate(100, (index) => (index + 1).toString());
 
   @override
   void initState() {
@@ -46,17 +55,17 @@ class _ProfilePageState extends State<ProfilePage> {
               profileImageUrl = userData?['profileImageUrl'];
             }
             selectedGender = userData?['gender'];
-            selectedAge = userData?['age'];
-            selectedDurationRA = userData?['durationOfRA'];
-            final previousAppt = userData?['previousAppointment'];
-            final nextAppt = userData?['nextAppointment'];
+            age = userData?['age'] ?? 'Loading...';
+            durationRA = userData?['durationOfRA'] ?? 'Loading...';
+            previousDate = userData?['previousAppointment'];
+            nextDate = userData?['nextAppointment'];
 
-            if (previousAppt != null) {
+            if (previousDate != null && previousDate!.isNotEmpty) {
               selectedPreviousDate =
-                  DateFormat('dd-MM-yyyy').parse(previousAppt);
+                  DateFormat('dd-MM-yyyy').parse(previousDate!);
             }
-            if (nextAppt != null) {
-              selectedNextDate = DateFormat('dd-MM-yyyy').parse(nextAppt);
+            if (nextDate != null && nextDate!.isNotEmpty) {
+              selectedNextDate = DateFormat('dd-MM-yyyy').parse(nextDate!);
             }
             nameController.text = name;
             emailController.text = email;
@@ -78,6 +87,18 @@ class _ProfilePageState extends State<ProfilePage> {
   void updateProfile() async {
     final user = FirebaseAuth.instance.currentUser;
     final userId = user?.uid;
+    if (age != "" && selectedAge == "") {
+      selectedAge = age;
+    }
+    if (durationRA != "" && selectedDurationRA == "") {
+      selectedDurationRA = durationRA;
+    }
+    if (previousDate != null && selectedPreviousDate == null) {
+      selectedPreviousDate = previousDate as DateTime?;
+    }
+    if (nextDate != null && selectedNextDate == null) {
+      selectedNextDate = nextDate as DateTime?;
+    }
 
     if (userId != null) {
       final userDoc =
@@ -177,14 +198,15 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget buildGenderButton(IconData icon, String gender) {
     return OutlinedButton(
       style: ButtonStyle(
-        side: MaterialStateProperty.all(BorderSide(
+        side: WidgetStateProperty.all(BorderSide(
           width: 1,
-          color: selectedGender == gender ? Colors.blue : Color(0xff4338CA),
+          color:
+              selectedGender == gender ? Colors.blue : const Color(0xff4338CA),
         )),
-        backgroundColor: MaterialStateProperty.resolveWith<Color>(
-          (Set<MaterialState> states) {
-            if (states.contains(MaterialState.pressed) ||
-                states.contains(MaterialState.selected)) {
+        backgroundColor: WidgetStateProperty.resolveWith<Color>(
+          (Set<WidgetState> states) {
+            if (states.contains(WidgetState.pressed) ||
+                states.contains(WidgetState.selected)) {
               return Colors.blue.withOpacity(0.2);
             } else if (selectedGender == gender) {
               return Colors.blue.withOpacity(0.1);
@@ -204,256 +226,251 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: const Text('Profile'),
         leading: IconButton(
-          icon: Icon(Icons.home),
+          icon: const Icon(Icons.home),
           onPressed: () {
             // Navigate back to the dashboard or home page.
             Navigator.pop(context);
           },
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            // Profile Picture with Edit Button
-            GestureDetector(
-              onTap: () {
-                _pickImage(); // Open image picker
-              },
-              child: CircleAvatar(
-                radius: 80,
-                backgroundImage: _selectedImage != null
-                    ? FileImage(File(_selectedImage!.path))
-                    : (profileImageUrl != "assets/anonymous.jpg"
-                        ? NetworkImage(profileImageUrl)
-                        : AssetImage('assets/anonymous.jpg') as ImageProvider),
-                child: Icon(Icons.edit),
-              ),
-            ),
-
-            SizedBox(height: 20),
-            // Registration Details with Edit Buttons
-            ListTile(
-              title: Text('Name: $name'),
-              trailing: IconButton(
-                icon: Icon(Icons.edit),
-                onPressed: () {
-                  // Handle editing the name field.
-                  nameController.text =
-                      name; // Initialize the field with current value.
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Edit Name'),
-                        content: TextField(
-                          controller: nameController,
-                          decoration: InputDecoration(hintText: 'New Name'),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text('Cancel'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              updateProfile();
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('Save'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              // Profile Picture with Edit Button
+              GestureDetector(
+                onTap: () {
+                  _pickImage(); // Open image picker
                 },
-              ),
-            ),
-            ListTile(
-              title: Text('Email: $email'),
-              trailing: IconButton(
-                icon: Icon(Icons.edit),
-                onPressed: () {
-                  // Handle editing the email field.
-                  emailController.text =
-                      email; // Initialize the field with the current value.
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('Edit Email'),
-                        content: TextField(
-                          controller: emailController,
-                          decoration: InputDecoration(hintText: 'New Email'),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('Cancel'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              updateProfile();
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('Save'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 20.0),
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text(
-                "Gender",
-                style: TextStyle(fontSize: 18.0),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            const SizedBox(height: 10.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                buildGenderButton(Icons.male, 'male'), // Male button
-                buildGenderButton(Icons.female, 'female'), // Female button
-                buildGenderButton(Icons.transgender, 'others'), // Female button
-              ],
-            ),
-            const SizedBox(height: 20.0),
-
-            // Add more details and edit buttons as needed.
-            SizedBox(height: 20),
-            const SizedBox(height: 10.0),
-            // Age
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                const Text(
-                  "Age                   ",
-                  style: TextStyle(fontSize: 18.0),
+                child: CircleAvatar(
+                  radius: 80,
+                  backgroundImage: _selectedImage != null
+                      ? FileImage(File(_selectedImage!.path))
+                      : (profileImageUrl != "assets/anonymous.jpg"
+                          ? NetworkImage(profileImageUrl)
+                          : const AssetImage('assets/anonymous.jpg')
+                              as ImageProvider),
+                  child: const Icon(Icons.edit),
                 ),
-                DropdownButton<String>(
-                  value: selectedAge,
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedAge = newValue;
-                    });
+              ),
+
+              const SizedBox(height: 20),
+              // Registration Details with Edit Buttons
+              ListTile(
+                title: Text('Name: $name'),
+                trailing: IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () {
+                    // Handle editing the name field.
+                    nameController.text =
+                        name; // Initialize the field with current value.
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Edit Name'),
+                          content: TextField(
+                            controller: nameController,
+                            decoration:
+                                const InputDecoration(hintText: 'New Name'),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                updateProfile();
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Save'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
                   },
-                  items: generateAgeOptions()
-                      .map<DropdownMenuItem<String>>(
-                        (String value) => DropdownMenuItem<String>(
+                ),
+              ),
+              ListTile(
+                title: Text('Email: $email'),
+                trailing: IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () {
+                    // Handle editing the email field.
+                    emailController.text =
+                        email; // Initialize the field with the current value.
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Edit Email'),
+                          content: TextField(
+                            controller: emailController,
+                            decoration:
+                                const InputDecoration(hintText: 'New Email'),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                updateProfile();
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Save'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 20.0),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  "Gender",
+                  style: TextStyle(fontSize: 18.0),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(height: 10.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  buildGenderButton(Icons.male, 'male'), // Male button
+                  buildGenderButton(Icons.female, 'female'), // Female button
+                  buildGenderButton(
+                      Icons.transgender, 'others'), // Female button
+                ],
+              ),
+              const SizedBox(height: 10.0),
+              // Age
+              age == ''
+                  ? DropdownButton<String>(
+                      hint: const Text('Select Age'),
+                      value: selectedAge,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedAge = newValue;
+                        });
+                      },
+                      items: ages.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
-                        ),
-                      )
-                      .toList(),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10.0),
+                        );
+                      }).toList(),
+                    )
+                  : Text(age),
+              const SizedBox(height: 10.0),
 
-            // Duration of RA
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                const Text(
-                  "Duration of RA",
-                  style: TextStyle(fontSize: 18.0),
-                ),
-                DropdownButton<String>(
-                  value: selectedDurationRA, // Use separate state variable
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedDurationRA = newValue;
-                    });
-                  },
-                  items: generateAgeOptions()
-                      .map<DropdownMenuItem<String>>(
-                        (String value) => DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        ),
-                      )
-                      .toList(),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10.0),
-            // Appointment (Previous & Next)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Column(
-                  children: [
-                    const Text(
-                      "Appt(Previous)",
-                      style: TextStyle(fontSize: 18.0),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        final DateTime? picked = await _selectDate(context);
-                        if (picked != null) {
-                          setState(() {
-                            selectedPreviousDate = picked;
-                          });
-                        }
-                      },
-                      child: Text(
-                        selectedPreviousDate != null
-                            ? _formatDate(selectedPreviousDate)
-                            : 'Select Date',
+              // Duration of RA
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const Text(
+                    "Duration of RA",
+                    style: TextStyle(fontSize: 18.0),
+                  ),
+                  DropdownButton<String>(
+                    value: selectedDurationRA, // Use separate state variable
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedDurationRA = newValue;
+                      });
+                    },
+                    items: generateAgeOptions()
+                        .map<DropdownMenuItem<String>>(
+                          (String value) => DropdownMenuItem<String>(
+                            
+                            value: value,
+                            child: Text(value),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10.0),
+              // Appointment (Previous & Next)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Column(
+                    children: [
+                      const Text(
+                        "Appt(Previous)",
+                        style: TextStyle(fontSize: 18.0),
                       ),
-                    ),
-                  ],
-                ),
-
-                // Appointment (Next)
-                Column(
-                  children: [
-                    const Text(
-                      "Appt(Next)",
-                      style: TextStyle(fontSize: 18.0),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        final DateTime? picked = await _selectDate(context);
-                        if (picked != null) {
-                          setState(() {
-                            selectedNextDate = picked;
-                          });
-                        }
-                      },
-                      child: Text(
-                        selectedNextDate != null
-                            ? _formatDate(selectedNextDate)
-                            : 'Select Date',
+                      ElevatedButton(
+                        onPressed: () async {
+                          final DateTime? picked = await _selectDate(context);
+                          if (picked != null) {
+                            setState(() {
+                              selectedPreviousDate = picked;
+                            });
+                          }
+                        },
+                        child: Text(
+                          selectedPreviousDate != null
+                              ? _formatDate(selectedPreviousDate)
+                              : 'Select Date',
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                    ],
+                  ),
 
-            // Update Button
-            ElevatedButton(
-              onPressed: () {
-                // Handle updating user data.
-                updateProfile();
-              },
-              child: Text('Update'),
-            ),
-          ],
+                  // Appointment (Next)
+                  Column(
+                    children: [
+                      const Text(
+                        "Appt(Next)",
+                        style: TextStyle(fontSize: 18.0),
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          final DateTime? picked = await _selectDate(context);
+                          if (picked != null) {
+                            setState(() {
+                              selectedNextDate = picked;
+                            });
+                          }
+                        },
+                        child: Text(
+                          selectedNextDate != null
+                              ? _formatDate(selectedNextDate)
+                              : 'Select Date',
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+
+              // Update Button
+              ElevatedButton(
+                onPressed: () {
+                  // Handle updating user data.
+                  updateProfile();
+                },
+                child: const Text('Update'),
+              ),
+            ],
+          ),
         ),
       ),
     );

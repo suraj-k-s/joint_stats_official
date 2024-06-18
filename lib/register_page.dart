@@ -66,8 +66,8 @@ class _RegistrationState extends State<Registration> {
               _imageUrl = imageUrl;
             });
           }
-
-          await firestore.collection('users').doc(userId).set({
+          try {
+            await firestore.collection('users').doc(userId).set({
             'name': _nameController.text,
             'email': _emailController.text,
             'password': _passwordController.text,
@@ -78,6 +78,11 @@ class _RegistrationState extends State<Registration> {
             'nextAppointment':'',
             'previousAppointment':'',
           });
+          } catch (e) {
+            print('ERROR STORING USER DATA: $e');
+          }
+          
+          print("User ID: $userId");
 
           Navigator.pushReplacement(
             context,

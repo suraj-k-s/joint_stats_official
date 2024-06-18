@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lottie/lottie.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -9,14 +8,15 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
 
-class ResultPage extends StatefulWidget {
-  const ResultPage({super.key});
+class ViewResult extends StatefulWidget {
+  const ViewResult({super.key, required this.id});
+  final String id;
 
   @override
-  State<ResultPage> createState() => _ResultPageState();
+  State<ViewResult> createState() => _ViewResultState();
 }
 
-class _ResultPageState extends State<ResultPage> {
+class _ViewResultState extends State<ViewResult> {
   double esr = 0;
   double esrLabel = 0;
   double haq = 0.0;
@@ -29,13 +29,16 @@ class _ResultPageState extends State<ResultPage> {
   double radaiLabel = 0.0;
   String? checkupId;
   bool _checkupLoader = false;
-  final TextEditingController _remarkController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    checkupId = widget.id;
+    result();
+  }
 
   Future<void> result() async {
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      checkupId = prefs.getString('checkupId');
       if (checkupId == null) {
         throw Exception("No checkup id");
       }
@@ -375,97 +378,19 @@ class _ResultPageState extends State<ResultPage> {
     }
   }
 
-  Future<void> saveData() async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      checkupId = prefs.getString('checkupId');
-      setState(() {
-        _checkupLoader = false;
-      });
-      if (checkupId == null) {
-        throw Exception("No checkup id");
-      }
-      await FirebaseFirestore.instance
-          .collection('checkup')
-          .doc(checkupId)
-          .update({
-        'remark': _remarkController.text,
-        'status': 1
-      });
-      Fluttertoast.showToast(
-        msg: 'Values Updated',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-      );
-     Navigator.pop(context);
-    } catch (e) {
-      setState(() {
-        _checkupLoader = true;
-      });
-      Fluttertoast.showToast(
-        msg: 'Values Updatation failed',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-      );
-      print("Error going to next page: $e");
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    result();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: const Text('My Final Results'),
-          actions: [
-            TextButton.icon(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  saveData();
-                }
-              },
-              label: const Text(
-                'Save',
-                style: TextStyle(color: Colors.blueAccent),
-              ),
-              icon: const Icon(
-                Icons.save_rounded,
-                color: Colors.blueAccent,
-              ),
-            )
-          ],
         ),
         body: _checkupLoader
             ? SingleChildScrollView(
-              child: Padding(
+                child: Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Form(
-                        key: _formKey,
-                        child: TextFormField(
-                          controller: _remarkController,
-                          decoration: const InputDecoration(
-                            hintText: 'Add remark', // Placeholder text
-                            border: OutlineInputBorder(), // Border outline
-                            contentPadding: EdgeInsets.all(15),
-                            focusColor: Colors.blueAccent // Inner padding
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: Row(
@@ -691,7 +616,7 @@ class _ResultPageState extends State<ResultPage> {
                     ],
                   ),
                 ),
-            )
+              )
             : Center(
                 child: Lottie.asset(
                   'assets/splashScreen.json',

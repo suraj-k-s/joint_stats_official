@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:joint_stats_official/main.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -72,7 +74,7 @@ class _ResultPageState extends State<ResultPage> {
 
     final pdf = pw.Document();
 
-    pw.Widget _buildPdfResultRow(String label, dynamic value) {
+    pw.Widget buildPdfResultRow(String label, dynamic value) {
       return pw.Padding(
         padding: const pw.EdgeInsets.symmetric(vertical: 8.0),
         child: pw.Row(
@@ -86,30 +88,20 @@ class _ResultPageState extends State<ResultPage> {
               ),
             ),
             pw.SizedBox(width: 20),
-            pw.Expanded(
-              flex: 6,
+            pw.Container(
+              width: 300,
+              height: 20,
+              decoration: pw.BoxDecoration(
+                border: pw.Border.all(color: PdfColors.grey),
+                borderRadius: pw.BorderRadius.circular(5),
+              ),
               child: pw.Container(
-                height: 20,
-                decoration: pw.BoxDecoration(
-                  border: pw.Border.all(color: PdfColors.grey),
-                  borderRadius: pw.BorderRadius.circular(5),
-                ),
+                alignment: pw.Alignment.centerLeft,
+                width: 300,
                 child: pw.Container(
-                  alignment: pw.Alignment.centerLeft,
-                  width: double.infinity,
-                  child: pw.Container(
-                    color: value == 1.0 ? PdfColors.green : PdfColors.red,
-                    width: value is double
-                        ? (value / 10) * 150
-                        : value == "Yes"
-                            ? 150
-                            : 0,
-                    height: 20,
-                    child: pw.Text(
-                      value.toString(),
-                      style: const pw.TextStyle(color: PdfColors.white),
-                    ),
-                  ),
+                  color: value == 1.0 ? PdfColors.green : PdfColors.red,
+                  width: 300,
+                  height: 20,
                 ),
               ),
             ),
@@ -147,32 +139,26 @@ class _ResultPageState extends State<ResultPage> {
                       ),
                     ),
                     pw.SizedBox(width: 20),
-                    pw.Expanded(
-                      flex: 6,
+                    pw.Container(
+                      width: 300,
+                      height: 20,
+                      decoration: pw.BoxDecoration(
+                        border: pw.Border.all(color: PdfColors.grey),
+                        borderRadius: pw.BorderRadius.circular(5),
+                      ),
                       child: pw.Container(
-                        height: 20,
-                        decoration: pw.BoxDecoration(
-                          border: pw.Border.all(color: PdfColors.grey),
-                          borderRadius: pw.BorderRadius.circular(5),
-                        ),
+                        alignment: pw.Alignment.centerLeft,
+                        width: 300,
                         child: pw.Container(
-                          alignment: pw.Alignment.centerLeft,
-                          width: double.infinity,
-                          child: pw.Container(
-                            color: esr <= 20
-                                ? PdfColors.green
-                                : (esr <= 35
-                                    ? PdfColors.yellow
-                                    : (esr <= 50
-                                        ? PdfColors.orange
-                                        : PdfColors.red)),
-                            width: ((esr * 10) / 150) / 10,
-                            height: 20,
-                            child: pw.Text(
-                              esr.toStringAsFixed(1),
-                              style: const pw.TextStyle(color: PdfColors.white),
-                            ),
-                          ),
+                          color: esr <= 20
+                              ? PdfColors.green
+                              : (esr <= 35
+                                  ? PdfColors.yellow
+                                  : (esr <= 50
+                                      ? PdfColors.orange
+                                      : PdfColors.red)),
+                          width: ((esr*10)/15)*3,
+                          height: 20,
                         ),
                       ),
                     ),
@@ -200,32 +186,26 @@ class _ResultPageState extends State<ResultPage> {
                       ),
                     ),
                     pw.SizedBox(width: 20),
-                    pw.Expanded(
-                      flex: 6,
+                    pw.Container(
+                      height: 20,
+                      width: 300,
+                      decoration: pw.BoxDecoration(
+                        border: pw.Border.all(color: PdfColors.grey),
+                        borderRadius: pw.BorderRadius.circular(5),
+                      ),
                       child: pw.Container(
-                        height: 20,
-                        decoration: pw.BoxDecoration(
-                          border: pw.Border.all(color: PdfColors.grey),
-                          borderRadius: pw.BorderRadius.circular(5),
-                        ),
+                        alignment: pw.Alignment.centerLeft,
+                        width: 300,
                         child: pw.Container(
-                          alignment: pw.Alignment.centerLeft,
-                          width: double.infinity,
-                          child: pw.Container(
-                            color: das <= 2.6
-                                ? PdfColors.green
-                                : (das <= 3.1
-                                    ? PdfColors.yellow
-                                    : (das <= 5.1
-                                        ? PdfColors.orange
-                                        : PdfColors.red)),
-                            width: ((das * 10) / 150) / 10,
-                            height: 20,
-                            child: pw.Text(
-                              das.toStringAsFixed(1),
-                              style: const pw.TextStyle(color: PdfColors.white),
-                            ),
-                          ),
+                          color: das <= 2.6
+                              ? PdfColors.green
+                              : (das <= 3.1
+                                  ? PdfColors.yellow
+                                  : (das <= 5.1
+                                      ? PdfColors.orange
+                                      : PdfColors.red)),
+                          width: ((das/6.2)*100)*3,
+                          height: 20,
                         ),
                       ),
                     ),
@@ -253,30 +233,24 @@ class _ResultPageState extends State<ResultPage> {
                       ),
                     ),
                     pw.SizedBox(width: 20),
-                    pw.Expanded(
-                      flex: 6,
+                    pw.Container(
+                      height: 20,
+                      width: 300,
+                      decoration: pw.BoxDecoration(
+                        border: pw.Border.all(color: PdfColors.grey),
+                        borderRadius: pw.BorderRadius.circular(5),
+                      ),
                       child: pw.Container(
-                        height: 20,
-                        decoration: pw.BoxDecoration(
-                          border: pw.Border.all(color: PdfColors.grey),
-                          borderRadius: pw.BorderRadius.circular(5),
-                        ),
+                        alignment: pw.Alignment.centerLeft,
+                        width: 300,
                         child: pw.Container(
-                          alignment: pw.Alignment.centerLeft,
-                          width: double.infinity,
-                          child: pw.Container(
-                            color: haq <= 1
-                                ? PdfColors.green
-                                : (haq <= 1.5
-                                    ? PdfColors.yellow
-                                    : PdfColors.red),
-                            width: ((haq * 10) / 150) / 10,
-                            height: 20,
-                            child: pw.Text(
-                              haq.toStringAsFixed(1),
-                              style: const pw.TextStyle(color: PdfColors.white),
-                            ),
-                          ),
+                          color: haq <= 1
+                              ? PdfColors.green
+                              : (haq <= 1.5
+                                  ? PdfColors.yellow
+                                  : PdfColors.red),
+                          width: (haq * 50) * 3,
+                          height: 20,
                         ),
                       ),
                     ),
@@ -304,30 +278,24 @@ class _ResultPageState extends State<ResultPage> {
                       ),
                     ),
                     pw.SizedBox(width: 20),
-                    pw.Expanded(
-                      flex: 6,
+                    pw.Container(
+                      height: 20,
+                      width: 300,
+                      decoration: pw.BoxDecoration(
+                        border: pw.Border.all(color: PdfColors.grey),
+                        borderRadius: pw.BorderRadius.circular(5),
+                      ),
                       child: pw.Container(
-                        height: 20,
-                        decoration: pw.BoxDecoration(
-                          border: pw.Border.all(color: PdfColors.grey),
-                          borderRadius: pw.BorderRadius.circular(5),
-                        ),
+                        alignment: pw.Alignment.centerLeft,
+                        width: 300,
                         child: pw.Container(
-                          alignment: pw.Alignment.centerLeft,
-                          width: double.infinity,
-                          child: pw.Container(
-                            color: radai <= 2.2
-                                ? PdfColors.green
-                                : (radai <= 4.9
-                                    ? PdfColors.yellow
-                                    : PdfColors.red),
-                            width: ((radai * 10) / 150) / 10,
-                            height: 20,
-                            child: pw.Text(
-                              radai.toStringAsFixed(1),
-                              style: const pw.TextStyle(color: PdfColors.white),
-                            ),
-                          ),
+                          color: radai <= 2.2
+                              ? PdfColors.green
+                              : (radai <= 4.9
+                                  ? PdfColors.yellow
+                                  : PdfColors.red),
+                          width: ((radai/9.2)*100)*3,
+                          height: 20,
                         ),
                       ),
                     ),
@@ -342,8 +310,8 @@ class _ResultPageState extends State<ResultPage> {
                   ],
                 ),
               ),
-              _buildPdfResultRow('PASS', pass),
-              _buildPdfResultRow('PASS (MODIFIED)', mpass),
+              buildPdfResultRow('PASS', pass),
+              buildPdfResultRow('PASS (MODIFIED)', mpass),
             ],
           );
         },
@@ -352,13 +320,15 @@ class _ResultPageState extends State<ResultPage> {
 
     try {
       final directory = await getExternalStorageDirectory();
-      print("Directory: $directory");
-      final downloadsDirectory = Directory('${directory!.path}/Download');
+      print("Directory: ${directory?.path}");
+      final downloadsDirectory = Directory('/storage/emulated/0/Download');
       if (!await downloadsDirectory.exists()) {
         await downloadsDirectory.create(recursive: true);
       }
       final file = File("${downloadsDirectory.path}/result-$checkupId.pdf");
       await file.writeAsBytes(await pdf.save());
+
+      await showNotification(downloadsDirectory.path);
 
       Fluttertoast.showToast(
         msg: "PDF saved to Downloads",
@@ -374,6 +344,26 @@ class _ResultPageState extends State<ResultPage> {
       );
     }
   }
+
+  Future<void> showNotification(String filePath) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'your_channel_id',
+      'your_channel_name',
+      channelDescription: 'your_channel_description',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: false,
+    );
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'PDF Saved',
+      'Your PDF has been saved successfully. Tap to open.',
+      platformChannelSpecifics,
+      payload: filePath,
+    );
+  }
+
 
   Future<void> saveData() async {
     try {

@@ -358,14 +358,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
               const SizedBox(height: 10.0),
-              // Age
-              age == ''
-                  ? DropdownButton<String>(
+              Text("Age: $age"),
+              DropdownButton<String>(
                       hint: const Text('Select Age'),
                       value: selectedAge,
                       onChanged: (String? newValue) {
                         setState(() {
                           selectedAge = newValue;
+                          age = newValue!;
                         });
                       },
                       items: ages.map<DropdownMenuItem<String>>((String value) {
@@ -374,8 +374,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: Text(value),
                         );
                       }).toList(),
-                    )
-                  : Text(age),
+                    ),
               const SizedBox(height: 10.0),
 
               // Duration of RA
@@ -396,13 +395,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     items: generateAgeOptions()
                         .map<DropdownMenuItem<String>>(
                           (String value) => DropdownMenuItem<String>(
-                            
                             value: value,
                             child: Text(value),
                           ),
                         )
                         .toList(),
                   ),
+                  Text(durationRA),
                 ],
               ),
               const SizedBox(height: 10.0),
@@ -431,6 +430,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               : 'Select Date',
                         ),
                       ),
+                      // Text(previousDate!),
                     ],
                   ),
 
@@ -456,6 +456,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               : 'Select Date',
                         ),
                       ),
+                      // Text(nextDate!),
                     ],
                   ),
                 ],

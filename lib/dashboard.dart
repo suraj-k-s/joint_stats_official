@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print, use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -29,12 +31,10 @@ class _DashboardPageState extends State<DashboardPage> {
     final String userId = user!.uid;
     String imageUrl = 'assets/anonymous.jpg'; // Set default image
     String userName = 'Anonymous';
-    print(userId);
     final userDoc = FirebaseFirestore.instance.collection('users').doc(userId);
     try {
       final documentSnapshot = await userDoc.get();
       if (documentSnapshot.exists) {
-        print('hi');
         final userData = documentSnapshot.data();
         if (userData != null) {
           if (userData['profileImageUrl'] != null) {
@@ -42,7 +42,6 @@ class _DashboardPageState extends State<DashboardPage> {
           }
           if (userData['name'] != null) {
             userName = userData['name'];
-            print(userName);
           }
         }
       }
@@ -308,14 +307,14 @@ class _DashboardPageState extends State<DashboardPage> {
             Color emojiColor;
 
             if (emoji > 5) {
-              emojiIcon = Icons.sentiment_very_satisfied;
-              emojiColor = Colors.green;
+              emojiIcon = Icons.sentiment_very_dissatisfied;
+              emojiColor = Colors.red;
             } else if (emoji >= 4 && emoji <= 5) {
               emojiIcon = Icons.sentiment_neutral;
               emojiColor = Colors.orange;
             } else {
-              emojiIcon = Icons.sentiment_very_dissatisfied;
-              emojiColor = Colors.red;
+              emojiIcon = Icons.sentiment_very_satisfied;
+              emojiColor = Colors.green;
             }
 
             return ListTile(
@@ -392,7 +391,7 @@ class _DashboardPageState extends State<DashboardPage> {
               Navigator.pop(context); // Close the menu
               // Add your navigation logic here
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => ProfilePage()));
+                  MaterialPageRoute(builder: (context) => const ProfilePage()));
             },
           ),
         ),

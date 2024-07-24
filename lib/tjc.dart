@@ -221,40 +221,80 @@ class _TJCState extends State<TJC> {
           child: Stack(
             children: [
               _checkupLoader
-                  ? Stack(
-                      children: [
-                        SizedBox(
-                          width: imageWidth,
-                          height: imageHeight,
-                          child: Image.asset(
-                            'assets/Body.png',
-                            width: imageWidth,
-                            height: imageHeight,
-                            fit: BoxFit.fill,
-                          ),
-                        ),
-                        for (var point in points)
-                          Positioned(
-                            left: point.x *
-                                (imageWidth / 350), // Scale the x position
-                            top: point.y *
-                                (imageHeight / 350), // Scale the y position
-                            child: GestureDetector(
-                              onTap: () {
-                                handlePointClick(point.id);
-                              },
-                              child: Container(
-                                width: point.size,
-                                height: point.size,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: point.color,
-                                ),
+                  ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Stack(
+                          children: [
+                            SizedBox(
+                              width: imageWidth,
+                              height: imageHeight,
+                              child: Image.asset(
+                                'assets/Body.png',
+                                width: imageWidth,
+                                height: imageHeight,
+                                fit: BoxFit.fill,
                               ),
                             ),
-                          ),
-                      ],
-                    )
+                            for (var point in points)
+                              Positioned(
+                                left: point.x *
+                                    (imageWidth / 350), // Scale the x position
+                                top: point.y *
+                                    (imageHeight / 350), // Scale the y position
+                                child: GestureDetector(
+                                  onTap: () {
+                                    handlePointClick(point.id);
+                                  },
+                                  child: Container(
+                                    width: point.size,
+                                    height: point.size,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: point.color,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(
+            height: 20,
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            decoration: BoxDecoration(
+                color: const Color.fromRGBO(68, 138, 255, 1),
+                borderRadius: BorderRadius.circular(5)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text(
+                  'Tender Joint Count',
+                  style: TextStyle(
+                    color: Colors.white, fontSize: 14,
+                    fontWeight:
+                        FontWeight.w500, // Use FontWeight.w600 for semibold
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                Text(
+                  (selectedPoints.length).toString(),
+                  style: const TextStyle(
+                    color: Colors.white, fontSize: 20,
+                    fontWeight:
+                        FontWeight.w500, // Use FontWeight.w600 for semibold
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+              ],
+            ),
+          ),
+                    ],
+                  )
                   : const Center(
                       child: CircularProgressIndicator(),
                     ),

@@ -57,9 +57,9 @@ class _MyValuesPageState extends State<MyValuesPage> {
   ];
 
   Widget _buildEmojiRating(int value) {
-    String emoji = '😔';
+    String emoji = '😊';
     if (value >= 6) {
-      emoji = '😊';
+      emoji = '😔';
     } else if (value >= 3 && value < 6) {
       emoji = '😐';
     }

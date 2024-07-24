@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,40 +14,70 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>(); // Form key for validation
 
   // Function to handle the login process
   Future<void> _login(BuildContext context) async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        final FirebaseAuth auth = FirebaseAuth.instance;
-        final UserCredential userCredential =
-            await auth.signInWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
-        );
+  if (_formKey.currentState!.validate()) {
+    try {
+      final FirebaseAuth auth = FirebaseAuth.instance;
+      final UserCredential userCredential =
+          await auth.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
 
-        // If login is successful, navigate to the SJC page
-        if (userCredential.user != null) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => DashboardPage()),
-          );
-        }
-      } catch (e) {
-        // Handle login failure and show an error toast.
-        Fluttertoast.showToast(
-          msg: 'Login failed: $e',
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
+      // If login is successful, navigate to the DashboardPage
+      if (userCredential.user != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const DashboardPage()),
         );
       }
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+      switch (e.code) {
+        case 'invalid-email':
+          errorMessage = 'Incorrect email ID.';
+          break;
+        case 'wrong-password':
+          errorMessage = 'Incorrect password.';
+          break;
+        case 'user-not-found':
+          errorMessage = 'No user found with this email.';
+          break;
+        case 'user-disabled':
+          errorMessage = 'User has been disabled.';
+          break;
+        case 'too-many-requests':
+          errorMessage = 'Too many requests. Try again later.';
+          break;
+        case 'operation-not-allowed':
+          errorMessage = 'Signing in with Email and Password is not enabled.';
+          break;
+        default:
+          errorMessage = 'Try Again';
+      }
+      Fluttertoast.showToast(
+        msg: 'Login failed: $errorMessage',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: 'Login failed: Network error',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {

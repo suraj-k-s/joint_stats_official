@@ -100,7 +100,7 @@ class _MoodPageState extends State<MoodPage> {
 
   Widget _buildEmojiRating(int value) {
     String emoji = '😊';
-    if (value < 3) {
+    if (value >= 6) {
       emoji = '😔';
     } else if (value >= 3 && value < 6) {
       emoji = '😐';

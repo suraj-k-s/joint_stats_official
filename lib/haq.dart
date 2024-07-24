@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, avoid_print
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -153,7 +155,7 @@ class _HAQState extends State<HAQ> {
         actions: [
           if (showSum)
             IconButton(
-                icon: Icon(Icons.arrow_forward),
+                icon: const Icon(Icons.arrow_forward),
                 onPressed: () {
                   nextPage();
                 }),
@@ -265,7 +267,7 @@ class _HAQState extends State<HAQ> {
                                             child: Tooltip(
                                               message: questions[index].value,
                                               child: Text(
-                                                '${questions[index].question}',
+                                                questions[index].question,
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 1,
                                               ),
@@ -303,7 +305,7 @@ class _HAQState extends State<HAQ> {
                                   });
                                 }
                               : null,
-                          child: Text('Submit'),
+                          child: const Text('Submit'),
                         ),
                 ),
               ],
